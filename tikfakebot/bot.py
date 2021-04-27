@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from TikTokApi import TikTokApi
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -13,6 +14,14 @@ def link(update, context):
     url = update.message.text
     update.message.reply_text(f'TikTok url: {url}')
     # TODO: replace with video downloading and processing
+    downloader(url)
+
+
+def downloader(url):
+    """Download the video from the link"""
+    video = TikTokApi().get_video_by_url(url)
+    with open("video2.mp4", "wb") as out:
+         out.write(video)
 
 
 def help(update, context):
