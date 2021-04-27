@@ -1,0 +1,12 @@
+name: devdays
+channels:
+  - pytorch
+  - anaconda
+  - conda-forge
+  - metric-learning
+  - defaults
+dependencies:
+  - python=3.8.5
+  - pip=20.0.2
+  - pip:
+    - mediapipe
