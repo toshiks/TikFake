@@ -1,5 +1,5 @@
 body_down 24 23
-body up 12 11
+body_up 12 11
 head 10 9 5 2 0 
 left_hand_up 14 12
 left_hand_middle 14 16
