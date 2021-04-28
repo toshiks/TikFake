@@ -1,13 +1,12 @@
 import moviepy.editor as mpe
-
 from TikTokApi import TikTokApi
 
 
-def downloader_video_with_audio(video_with_audio, video_without_audio):
+def downloader_video_with_audio(video_with_audio, video_without_audio, chat_id):
     """Function for getting video"""
     audio = get_audio(video_with_audio)
     my_clip = get_video_with_audio(video_without_audio, audio)
-    my_clip.write_videofile("movie.mp4")
+    my_clip.write_videofile(f"data/{chat_id}_movie.mp4")
 
 
 def get_audio(video):
@@ -22,8 +21,8 @@ def get_video_with_audio(video_without_audio, audio):
     return video_clip.set_audio(audio)
 
 
-def downloader_video_from_link(url):
+def downloader_video_from_link(url, chat_id, a):
     """Download the video from the link"""
-    video = TikTokApi().get_video_by_url(url)
-    with open("video.mp4", "wb") as out:
+    video = a.get_video_by_url(url)
+    with open(f"data/{chat_id}.mp4", "wb") as out:
          out.write(video)
