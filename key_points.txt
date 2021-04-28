@@ -1,0 +1,12 @@
+body_down 24 23
+body up 12 11
+head 10 9 5 2 0 
+left_hand_up 14 12
+left_hand_middle 14 16
+left_leg_down 26 28
+left_leg_up 26 24
+right_hand_up 11 13
+right_hand_middle 13 15
+right_leg_down 25 27
+right_leg_up 25 23
+all_points 0 2 5 9 10 11 12 13 14 15 16 23 24 25 26 27 28
