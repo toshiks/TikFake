@@ -1,7 +1,8 @@
 import logging
 import pathlib
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
 from tikfake.animation_pipeline import AnimationPipeline
 from tikfake.app import downloader_video_with_audio, downloader_video_from_link
 
@@ -10,7 +11,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-def link(update, context):
+def link(update: Updater, context: CallbackContext):
     """Process entered URL."""
     url = update.message.text
     update.message.reply_text(f'TikTok url: {url}')
@@ -25,13 +26,16 @@ def link(update, context):
     # download in "movie.mp4"
     downloader_video_with_audio("video.mp4", "output.mp4")
 
+    # send "movie.mp4" to the user
+    context.bot.sendVideo(update.message.chat_id, video=open('movie.mp4', 'rb'), supports_streaming=True)
 
-def help(update, context):
+
+def help(update: Updater, context: CallbackContext):
     """Display help."""
     update.message.reply_text('Enter a TikTok URL and get an animated video generated from it.')
 
 
-def error(update, context):
+def error(update: Updater, context: CallbackContext):
     """Log errors caused by updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
