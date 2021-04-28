@@ -28,7 +28,7 @@ class Bot:
     def link(update: Updater, context: CallbackContext):
         """Process entered URL."""
         url = update.message.text
-        update.message.reply_text(f'TikTok url: {url}')
+        update.message.reply_text(f'Please, wait...')
 
         # download video in "video.mp4"
         downloader_video_from_link(url)

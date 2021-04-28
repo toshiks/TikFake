@@ -49,7 +49,7 @@ class SaveVideoNode:
         if not self._video_writer:
             return
 
-        if image_frame.shape[0] != self._image_shape[0] or image_frame[1] != self._image_shape[1]:
+        if image_frame.shape[0] != self._image_shape[0] or image_frame.shape[1] != self._image_shape[1]:
             image_frame = cv2.resize(image_frame, self._image_shape)
 
         self._video_writer.write(image_frame)

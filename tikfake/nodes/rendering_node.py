@@ -3,6 +3,7 @@ from typing import Dict, Optional
 import cv2
 import numpy as np
 from mediapipe.python.solutions.pose import POSE_CONNECTIONS
+from tikfake.nodes.sprite_node import SpriteNode
 
 
 class RenderingNode:
@@ -22,12 +23,13 @@ class RenderingNode:
         for landmark_px in keypoints.values():
             cv2.circle(image, landmark_px, 2, (0, 0, 255), 2)
 
-    def process(self, keypoints: Optional[Dict], image: np.ndarray) -> np.ndarray:
+    def process(self, keypoints: Optional[Dict], image: np.ndarray, sprite: SpriteNode) -> np.ndarray:
         """Drawing image by keypoints.
 
         Args:
             keypoints: dict of keypoints. If null will be used previous sample or default.
             image: image in BGR format where keypoints were
+            sprite: sprite bodyparts
 
         Returns:
             Rendered image.
@@ -36,6 +38,6 @@ class RenderingNode:
         image = cv2.flip(image, 1)
 
         if keypoints is not None:
-            self._render_skeleton(keypoints, image)
+            return sprite.process(keypoints, image)
 
         return image
