@@ -14,4 +14,4 @@ RUN ./download.sh
 
 ENV PYTHONPATH "${PYTHONPATH}:/app"
 
-ENTRYPOINT [ "python3", "tikfake/bot.py"]
+ENTRYPOINT [ "python3", "tikfake/app.py"]
