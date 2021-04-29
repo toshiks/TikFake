@@ -3,7 +3,7 @@ import pathlib
 import csv
 from typing import Tuple
 
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageOps, ImageFilter
 import cv2
 import math
 import numpy as np
@@ -102,10 +102,10 @@ class SpriteNode:
 
     def process(self, keypoints: Dict, image: np.ndarray):
         """Drawing sprite bodyparts by keypoints."""
-        image = Image.new("RGBA", (image.shape[1], image.shape[0]), color='white')
+        # image = Image.new("RGBA", (image.shape[1], image.shape[0]), color='white')
 
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        # image = Image.fromarray(image.astype('uint8'), 'RGB')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(image.astype('uint8'), 'RGB').filter(ImageFilter.BoxBlur(1000))
 
         if keypoints is not None:
             for bodypart in self._part_keypoints:
