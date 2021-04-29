@@ -30,6 +30,7 @@ class SpriteNode:
 
                 R, G, B, A = Image.open(path_to_sprite / f'{name}.png').split()
                 image = Image.merge('RGBA', (B, G, R, A))
+                # image = Image.open(path_to_sprite / f'{name}.png')
                 width, height = image.size[:2]
                 pad = max(width, height)
                 image = ImageOps.expand(image, pad)
@@ -50,7 +51,9 @@ class SpriteNode:
     def _angle(v1, v2):
         v1 = v1 / np.linalg.norm(v1)
         v2 = v2 / np.linalg.norm(v2)
-        return math.degrees(np.arccos(np.clip(np.dot(v1, v2), -1.0, 1.0)))
+        sin = np.cross(v2, v1)
+        cos = np.dot(v2, v1)
+        return np.rad2deg(np.arctan2(sin, cos))
 
     @staticmethod
     def _scale(v1, v2):
@@ -81,8 +84,8 @@ class SpriteNode:
         if not width or not height:
             return
 
-        # draw = ImageDraw.Draw(sprite)
-        # draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=3, fill='blue')
+        draw = ImageDraw.Draw(sprite)
+        draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=3, fill='blue')
 
         sprite = sprite.resize((width, height), Image.ANTIALIAS)
         sprite = sprite.rotate(angle, center=(cx, cy))
@@ -95,8 +98,8 @@ class SpriteNode:
         image.paste(sprite, (dx, dy), sprite)
         # image.save(f'frame_{bodypart}.png')
 
-        # draw = ImageDraw.Draw(image)
-        # draw.line((kp_a[0], kp_a[1], kp_b[0], kp_b[1]), width=3, fill='red')
+        draw = ImageDraw.Draw(image)
+        draw.line((kp_a[0], kp_a[1], kp_b[0], kp_b[1]), width=3, fill='red')
         # draw.line((dx, dy, dx+1, dy+1), width=10, fill='red')
 
     def process(self, keypoints: Dict, image: np.ndarray):
