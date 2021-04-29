@@ -25,8 +25,8 @@ class SpriteNode:
         parts = {}
         with open(path_to_sprite / 'keypoints.csv') as keypoints:
             for bodypart in csv.reader(keypoints):
-                name, a, b, *_ = bodypart
-                parts[name] = {'index': [int(a), int(b)], 'points': []}
+                name, *indices = bodypart
+                parts[name] = {'index': list(map(int, indices)), 'points': []}
 
                 image = Image.open(path_to_sprite / f'{name}.png')
                 width, height = image.size[:2]
@@ -39,10 +39,6 @@ class SpriteNode:
                     for point in csv.reader(part):
                         parts[name]['points'].append(np.array(list(map(int, point))) + delta)
 
-                # point_a, point_b, *_ = parts[name]['points']
-                # draw = ImageDraw.Draw(image)
-                # draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=4, fill='blue')
-                # image.save(f'image_{name}.png')
         return parts
 
     @staticmethod
@@ -57,30 +53,42 @@ class SpriteNode:
     def _scale(v1, v2):
         return np.linalg.norm(v2) / np.linalg.norm(v1)
 
+    def _get_height_scale(self, keypoints: Dict, bodypart: str) -> int:
+        point_a, point_b, point_c, point_d, *_ = self._part_keypoints[bodypart]['points']
+        kp_a, kp_b, kp_c, kp_d, *_ = map(keypoints.get, self._part_keypoints[bodypart]['index'])
+        if None in [kp_a, kp_b, kp_c, kp_d]:
+            return None
+        kp_a, kp_b, kp_c, kp_d = map(np.array, [kp_a, kp_b, kp_c, kp_d])
+        return self._scale((point_a + point_b) / 2 - (point_c + point_d) / 2,
+                           (kp_a + kp_b) / 2 - (kp_c + kp_d) / 2)
+
     def _render_single_sprite(self, keypoints: Dict, bodypart: str, image: Image):
         """Draw a single sprite on top of the image."""
-        index_a, index_b = self._part_keypoints[bodypart]['index']
-        point_a, point_b, *_ = self._part_keypoints[bodypart]['points']
-        kp_a = keypoints.get(index_a)
-        kp_b = keypoints.get(index_b)
+        index_a, index_b, *indices = self._part_keypoints[bodypart]['index']
+        point_a, point_b, *points = self._part_keypoints[bodypart]['points']
+        kp_a, kp_b = keypoints.get(index_a), keypoints.get(index_b)
 
         if kp_a is None or kp_b is None:
             return
 
-        kp_a = np.array(kp_a)
-        kp_b = np.array(kp_b)
+        kp_a, kp_b = np.array(kp_a), np.array(kp_b)
 
-        scale = self._scale(point_b - point_a, kp_b - kp_a)
-        angle = self._angle(point_b - point_a, kp_b - kp_a)
-        cx, cy = int(scale * point_a[0]), int(scale * point_a[1])
-        dx, dy = int(kp_a[0] - cx), int(kp_a[1] - cy)
-
+        scale_x = scale_y = self._scale(point_b - point_a, kp_b - kp_a)
         sprite = self._part_keypoints[bodypart]['image'].copy()
 
-        width = int(sprite.size[0] * scale)
-        height = int(sprite.size[1] * scale)
+        if indices:
+            scale = self._get_height_scale(keypoints, bodypart)
+            if scale is not None:
+                scale_y = scale
+
+        width = int(sprite.size[0] * scale_x)
+        height = int(sprite.size[1] * scale_y)
         if not width or not height:
             return
+
+        angle = self._angle(point_b - point_a, kp_b - kp_a)
+        cx, cy = int(scale_x * point_a[0]), int(scale_y * point_a[1])
+        dx, dy = int(kp_a[0] - cx), int(kp_a[1] - cy)
 
         # draw = ImageDraw.Draw(sprite)
         # draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=3, fill='blue')
