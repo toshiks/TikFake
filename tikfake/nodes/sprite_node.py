@@ -28,9 +28,7 @@ class SpriteNode:
                 name, a, b, *_ = bodypart
                 parts[name] = {'index': [int(a), int(b)], 'points': []}
 
-                R, G, B, A = Image.open(path_to_sprite / f'{name}.png').split()
-                image = Image.merge('RGBA', (B, G, R, A))
-                # image = Image.open(path_to_sprite / f'{name}.png')
+                image = Image.open(path_to_sprite / f'{name}.png')
                 width, height = image.size[:2]
                 pad = max(width, height)
                 image = ImageOps.expand(image, pad)
@@ -84,31 +82,24 @@ class SpriteNode:
         if not width or not height:
             return
 
-        draw = ImageDraw.Draw(sprite)
-        draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=3, fill='blue')
+        # draw = ImageDraw.Draw(sprite)
+        # draw.line((point_a[0], point_a[1], point_b[0], point_b[1]), width=3, fill='blue')
 
         sprite = sprite.resize((width, height), Image.ANTIALIAS)
         sprite = sprite.rotate(angle, center=(cx, cy))
-
-        # draw = ImageDraw.Draw(sprite)
-        # draw.line((cx, cy, cx+1, cy+1), width=10, fill='red')
-        # draw.line((center[0], center[1], center[0]+1, center[1]+1), width=10, fill='yellow')
-
-        # sprite.save(f'sprite_{bodypart}.png')
         image.paste(sprite, (dx, dy), sprite)
-        # image.save(f'frame_{bodypart}.png')
 
-        draw = ImageDraw.Draw(image)
-        draw.line((kp_a[0], kp_a[1], kp_b[0], kp_b[1]), width=3, fill='red')
-        # draw.line((dx, dy, dx+1, dy+1), width=10, fill='red')
+        # draw = ImageDraw.Draw(image)
+        # draw.line((kp_a[0], kp_a[1], kp_b[0], kp_b[1]), width=3, fill='red')
 
     def process(self, keypoints: Dict, image: np.ndarray):
         """Drawing sprite bodyparts by keypoints."""
-        # image = Image.new("RGBA", (image.shape[1], image.shape[0]), color='white')
-        image = Image.fromarray(image.astype('uint8'), 'RGB')
+        image = Image.new("RGBA", (image.shape[1], image.shape[0]), color='white')
+
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = Image.fromarray(image.astype('uint8'), 'RGB')
 
         for bodypart in self._part_keypoints:
             self._render_single_sprite(keypoints, bodypart, image)
 
-        # return cv2.cvtColor(np.array(image), cv2.COLOR_RGBA2BGR)
-        return np.array(image)
+        return cv2.cvtColor(np.array(image), cv2.COLOR_RGBA2BGR)
