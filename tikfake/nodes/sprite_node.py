@@ -107,7 +107,8 @@ class SpriteNode:
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         # image = Image.fromarray(image.astype('uint8'), 'RGB')
 
-        for bodypart in self._part_keypoints:
-            self._render_single_sprite(keypoints, bodypart, image)
+        if keypoints is not None:
+            for bodypart in self._part_keypoints:
+                self._render_single_sprite(keypoints, bodypart, image)
 
         return cv2.cvtColor(np.array(image), cv2.COLOR_RGBA2BGR)

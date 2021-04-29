@@ -36,8 +36,4 @@ class RenderingNode:
         """
 
         image = cv2.flip(image, 1)
-
-        if keypoints is not None:
-            return sprite.process(keypoints, image)
-
-        return image
+        return sprite.process(keypoints, image)
