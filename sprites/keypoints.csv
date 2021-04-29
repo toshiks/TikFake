@@ -7,5 +7,7 @@ body_down,24,23
 head,5,2,10,9,0
 left_hand_up,14,12
 left_hand_middle,14,16
+left_palm,15,19
 right_hand_up,11,13
 right_hand_middle,13,15
+right_palm,16,20
