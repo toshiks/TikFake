@@ -1,5 +1,4 @@
 import logging
-import pathlib
 from typing import Tuple
 
 import cv2
@@ -19,22 +18,20 @@ class InputStreamNode:
         """Reset state of node."""
         self._stream = None
 
-    def setup(self, path_to_video: pathlib.Path):
+    def setup(self):
         """Setup function.
 
         Args:
             path_to_video : path to video with tik-tok.
         """
 
-        string_path_to_video = str(path_to_video)
-
-        self._stream = cv2.VideoCapture(string_path_to_video)
+        self._stream = cv2.VideoCapture(0)
 
         if not self._stream.isOpened() or not self._get_frame()[0]:
             self._stream.release()
-            self._logger.error("Cannot open video from: %s", string_path_to_video)
+            self._logger.error("Cannot open webcam")
 
-        self._logger.info("Opened stream: %s", string_path_to_video)
+        self._logger.info("Opened webcam")
 
     @property
     def stream_fps(self) -> int:

@@ -1,6 +1,7 @@
 import pathlib
 
-from tikfake.nodes import InputStreamNode, MediapipeNode, RenderingNode, SaveVideoNode, SpriteNode
+from tikfake.nodes import InputStreamNode, MediapipeNode, RenderingNode, SpriteNode
+import cv2
 
 
 class AnimationPipeline:
@@ -9,7 +10,6 @@ class AnimationPipeline:
         self._input_node = InputStreamNode()
         self._mediapipe_node = MediapipeNode()
         self._rendering_node = RenderingNode()
-        self._save_node = SaveVideoNode()
         self._sprite_node = SpriteNode()
 
     def _reset_state(self):
@@ -17,16 +17,13 @@ class AnimationPipeline:
         self._input_node.reset_state()
         self._mediapipe_node.reset_state()
         self._rendering_node.reset_state()
-        self._save_node.reset_state()
         self._sprite_node.reset_state()
 
-    def _setup(self, path_to_video: pathlib.Path, path_to_sprite: pathlib.Path, path_for_saving: pathlib.Path):
-        self._input_node.setup(path_to_video)
-        self._save_node.setup(path_for_saving, self._input_node.stream_fps, self._input_node.stream_width,
-                              self._input_node.stream_height)
+    def _setup(self, path_to_sprite: pathlib.Path):
+        self._input_node.setup()
         self._sprite_node.setup(path_to_sprite)
 
-    def process(self, path_to_video: pathlib.Path, path_to_sprite: pathlib.Path, path_for_saving: pathlib.Path):
+    def process(self, path_to_sprite: pathlib.Path):
         """Create animation from video.
 
         Args:
@@ -37,7 +34,7 @@ class AnimationPipeline:
         Returns:
 
         """
-        self._setup(path_to_video, path_to_sprite, path_for_saving)
+        self._setup(path_to_sprite)
 
         while True:
             exist_frame, frame = self._input_node.process()
@@ -46,7 +43,9 @@ class AnimationPipeline:
 
             keypoints = self._mediapipe_node.process(frame)
             new_frame = self._rendering_node.process(keypoints, frame, self._sprite_node)
-            self._save_node.process(new_frame)
+            cv2.imshow('image', new_frame)
+            if cv2.waitKey(5) == 13:
+                break
 
         self._reset_state()
 
